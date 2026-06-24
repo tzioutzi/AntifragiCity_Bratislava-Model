@@ -1,6 +1,6 @@
 ## Bratislava Multimodal Mobility DSS
 Overview
-The Bratislava Model is an agent-based Decision Support System pilot designed to study and optimise multimodal mobility in the constrained topology of the Danube's riverbanks under operational disturbances of bridge infrastructure. It is one of three pilot case studies (alongside Thessaloniki/AHEPA and Larissa) developed within the AntifragiCity project as the empirical workhorse of Deliverable D3.4 — Mobility Triage Analysis DSS.
+The Bratislava Model is an agent-based Decision Support System pilot designed to study and optimise multimodal mobility in the constrained topology of the Danube's riverbanks under operational disturbances of bridge infrastructure. It is one of three pilot case studies developed within the AntifragiCity project as the empirical workhorse of Deliverable D3.4 — Mobility Triage Analysis DSS.
 The model serves three integrated purposes:
 1.	Capture the multimodal network of Bratislava — directed primary and secondary roads, tram lines, bus routes and a ferry network connecting the riverbanks — sourced from OpenStreetMap and geolocated using QGIS 3.40 for maximum accuracy .
 2.	Integrate socioeconomic land-use data — static patches carry population density and the distribution of socioeconomic profiles drawn from an official 2019 report, with travellers whose income is below half the population average automatically classified as vulnerable .
