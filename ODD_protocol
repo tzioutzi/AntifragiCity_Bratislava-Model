@@ -1,0 +1,127 @@
+WHAT IS IT?
+The Bratislava Model is an agent-based Decision Support System pilot designed to study and optimise multimodal mobility across the constrained topology of the Danube's two riverbanks under operational disturbances of bridge infrastructure. It is one of three pilot case studies (alongside Thessaloniki/AHEPA and Larissa) developed within the AntifragiCity project as the empirical workhorse of Deliverable D3.4 — Mobility Triage Analysis DSS.
+The model serves three purposes:
+Capture the multimodal network of Bratislava, including directed primary and secondary roads, tram lines, bus routes and a ferry network connecting the riverbanks, sourced from OpenStreetMap and geolocated with QGIS version 3.40 for maximum accuracy.
+Integrate socioeconomic land-use data drawn from official reports: static patches carry population density and the distribution of socioeconomic profiles, with travellers whose income falls below half the population average automatically classified as vulnerable.
+Test response strategies to bridge-closure disruptions, ranging from the closure of a single critical bridge to the simultaneous closure of all three Danube crossings, and quantify how modal-share redistribution combined with the insertion of temporary ferry services mitigates the loss of cross-river capacity.
+Crucially, among the three primary DSS pilots, the Bratislava configuration is the only one whose combination of a novel modal link and equity-aware design produces antifragile gains: completed-trip rates rise 32% and 53% above pre-disruption baselines — outperforming the post-disruption state of the system, not merely recovering it.
+HOW IT WORKS
+(what rules the agents use to create the overall behavior of the model)
+The semantic ontology of the Bratislava model (Figure 5.13 in D3.4) is a multimodal, equity-aware agent-based system in which the network graph is composed of stationary nodes and directed links, dynamic agents navigate according to mode, and static patches carry socioeconomic information.
+1. The Multimodal Network Underlay
+The Bratislava model incorporates directed networks of primary and secondary roads, tram lines, and bus routes, which were obtained from OpenStreetMap and geolocated using QGIS version 3.40 for maximum accuracy. Additionally, the ferry network connecting the riverbanks is accessible to all agents, subject to operational availability.
+Formally, the network's edges are modelled as directed links, and nodes are represented as stationary agents. This is in sharp contrast to the undirected graph used by the AHEPA pilot and reflects the real-world topology of Bratislava, where bridge directions, one-way streets and metro/tram corridors are inherently asymmetric.
+2. The Agents
+The ontology distinguishes three agent populations:
+Agent type	Role in the model
+Cars	Dynamic autonomous agents that navigate the road network towards their destination.
+Buses / Trams	Dynamic autonomous agents that traverse their dedicated networks — buses on the bus network and trams on the tram network.
+Travellers	Persons carrying a socioeconomic profile inherited from the origin patch. Their income is drawn from a normal distribution, and travellers with an income lower than half the population average are classified as vulnerable.
+Stops & Intersections	Stationary agents that act as access points; destinations are randomly allocated at intersections or at stops of the traveller's selected transport mode.
+
+3. Behavioural Rules
+Cars travel the road network, buses the bus network and trams the tram network — each on its own directed graph of link-owned edges and stationary node agents.
+Travellers select one mode per trip, traverse the network using the shortest path consistent with that mode's graph, and arrive at a destination randomly allocated at intersections or stops of the selected mode.
+Mobility is subject to acceleration, deceleration and speed limit constraints configured by the user, which feed back into throughput, efficiency and energy metrics.
+Selection delay in choosing modes can be optionally activated to reproduce information-lag frictions during emergency operational disturbances.
+Agents can dynamically switch modes when the current mode's network becomes unavailable — for example, when a bridge node is closed, the affected agents re-route along the multimodal graph.
+4. KPI Computation
+In addition to the system's general capacity KPIs defined in Deliverable D2.3, the Bratislava model expands the KPI set by including:
+KPI	Measures
+Throughput (M)	Trip ends of the general population 
+Vulnerable Throughput	Trip ends of the vulnerable population subgroup
+Efficiency (S)	Performance of the network under stress 
+Redundancy (R)	Availability of alternative pathways (modal or topological) 
+Entropy (Q)	Satisfaction/psychological stress level 
+Theil-T index	Socioeconomic inequity measure, drawn from the Theil literature, that captures how unevenly the serviceability gains or losses are distributed across income cohorts
+Serviceability	Aggregate measure of how many commuters make a successful trip under a given disruption
+The presented outputs reflect the first ten minutes following the onset of the perturbation or the implementation of a response strategy — investigating the predictive capacity of the proposed DSS under conditions of constrained response time.
+5. Disruption Scenarios
+The user can investigate three bridge-closure configurations that capture the topology of Bratislava's three crossings:
+Scenario	Bridges Closed	Functional signature
+SNP	SNP Bridge only	High-centrality, multi-lane bridge serving cars and buses
+SNP + Stary	SNP + Stary Bridge	Stary is rail-exclusive, so its combined closure does not directly amplify the impacts on car-dominated trips
+SNP + Stary + Apollo	All three bridges	Combined unavailability leading to the most significant impacts on commuter serviceability and triggering a saturation effect in the equity index
+These scenarios can be applied in combination with delays in modal selection to investigate the joint effect of an infrastructural outage and an information-lag friction.
+6. Response Strategies
+Two complementary response families are available:
+Modal-share redistribution (MS1–MS3): three pre-defined modal scenarios, calibrated against report 51:
+MS1 = 65% car / 19% bus / 15% tram: currently prevalent modal share.
+MS2 = 50% car / 29% bus / 30% tram.
+MS3 = 40% car / 30% bus / 30% tram.
+Temporary ferry service: introduces a previously absent modal link — a direct connection between critical transport nodes on opposite riverbanks — that effectively bypasses the disrupted bridge links to mitigate localized congestion.
+Combined configurations (ferry + MS3, ferry + biased modal split, etc.) are investigated in the simulations.
+HOW TO USE IT
+(how to use the model, including a description of each of the items in the Interface tab)
+The UI of the Bratislava model (Figure 5.14) combines user-defined inputs and live outputs.
+Input Controls
+Modal-split chooser / sliders — set the share of population among car, bus and tram.
+Maximum speed of cars — sets the upper-bound for the car agent kinematics.
+Acceleration & deceleration sliders — affect the overall throughput, efficiency and energy consumption of the system.
+Selection delay switch — activates stochastic delays in modal selection, simulating information-lag frictions during disturbances.
+Bridge-closure selector — choose from None, SNP only, SNP + Stary or SNP + Stary + Apollo.
+Response selector — toggle do-nothing, the active modal-share scenario (MS1/MS2/MS3), the temporary ferry override, or the combined ferry + MS3 composite.
+Output Monitors & Plots
+Live KPI readouts — current values for Throughput (general and vulnerable), Efficiency, Redundancy, Entropy and Theil-T.
+Serviceability time-series plot — graphical monitoring of how many commuters make a successful trip during a 10-minute forecast horizon.
+Modal-share share plot — visualises the share of agents currently using each mode, useful for quantifying how many commuters make the active mode shift during a disruption.
+Equity monitor with Theil-T — captures the inequality implications of interventions across income cohorts, exposing the inherent trade-off between absolute system efficiency and spatial equity.
+Antifragility highlight — completed-trip rate flag shows whether the post-response state exceeds the pre-disruption baseline, the operational definition of antifragility used by the DSS.
+Running a Trial
+Open the UI and pick a modal share (MS1, MS2 or MS3) and the maximum car speed, acceleration, deceleration values.
+Optionally switch on a selection delay in modal choice.
+Trigger a bridge closure from the available scenarios.
+Run a do-nothing baseline and record the Throughput / Efficiency / Theil-T outputs.
+Activate an MS shift (MS1 → MS2 → MS3) under the same closure and compare throughput lift — a >13% lift on both the general and the vulnerable population is expected under MS3 relative to MS1.
+Activate the temporary ferry service and observe serviceability lift up to 65% during disruptions, compared to only 6% under do-nothing.
+Compare the Theil-T index across scenarios to surface the inherent trade-off between absolute system efficiency and spatial equity.
+THINGS TO NOTICE
+(suggested things for the user to notice while running the model)
+Modal shift under normal conditions raises throughput by more than 13%. Moving the modal split from MS1 (65% car) to MS3 raises trip ends for both the general (15.433%) and vulnerable populations (16.903%), and lifts the efficiency from −33.323% to −8.086%. At the same time, the Theil-T index slightly increases (from 8.549 to 9.575), uncovering the trade-off between absolute system efficiency and spatial equity.
+The high-centrality SNP bridge is the dominant one. Closing only the SNP bridge already drops throughput by −7.10% for the general population and −13.18% for the vulnerable population, indicating an over-representation of vulnerable users in the modal mix that relied on SNP.
+Stary Bridge closure is asymmetric and rail-exclusive. Adding Stary to SNP leaves the general-population throughput unchanged at −7.10%, while vulnerable throughput recovers slightly to −5.19% — the very fact that Stary serves only rail transport limits its immediate interaction with the prevailing car-dominated modal split.
+All-bridges closure triggers Theil-T saturation. When all three Danube crossings are unavailable, throughput worsens for both groups (general −10.66%, vulnerable −16.48%), but Theil-T falls to −0.61%, suggesting that the equity index has stabilised: there is a saturation point in network performance where the lack of cross-river connectivity uniformly penalises all transit users regardless of socioeconomic status.
+The ferry is not a redistribution — it is a topology reconfiguration. All response strategies incorporating temporary ferry services preserve or enhance serviceability from 6% to 65% during disruptions, compared to the do-nothing scenario. The ferry introduces a previously absent modal link, which is fundamentally different from re-balancing the split across existing modes.
+The antifragility highlight is the Bratislava signature. Completed-trip rates rise 32% and 53% above pre-disruption baselines once the temporary ferry is active, indicating that the system post-response actually exceeds its pre-disruption state — the operational signature of antifragility within the DSS framework.
+Selection delay acts as an information-lag amplifier. When enabling the selection-delay switch on top of a closure, throughput drops further and the Theil-T widens, suggesting that the real-world coupling of infrastructural outages with commuter information lag is non-trivial.
+THINGS TO TRY
+(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Sweep modal-share sliders under no disruption and observe how throughput, efficiency and Theil-T evolve. The relevant baseline is found in Table 5.3.
+Compare MS1 (65/19/15) to MS2 (50/29/30) to MS3 (40/30/30) under no closure, and re-run under the SNP-only closure. Expect MS3 to lift vulnerable throughput above 16% under normal conditions and ferry+MS3 to recover the bulk of the disrupted baseline.
+Stride the bridge-closure dropdown from None → SNP → SNP+Stary → SNP+Stary+Apollo and observe the saturation pattern in Theil-T.
+Trigger a SNP-only closure and contrast do-nothing vs. ferry: the ferry produces the canonical 6% → 65% serviceability jump (Table 5.5).
+Combine ferry + MS3 for the SNP+Stary+Apollo scenario and observe the simultaneous completion of (a) >13% throughput lift, (b) >35% additional completed trips, and (c) up to 18% Theil-T widening.
+Switch on selection-delay while keeping the modal split fixed, and quantify how information lag magnifies the disruption.
+Vary the maximum car speed slider and observe the throughput ceiling. Cars are the only mode for which maximum speed is user-defined; buses and trams operate on the line-schedule cyber-physical layer of the model.
+Capture only the first ten minutes of the forecast horizon when neutralising which strategy wins — the snapshot horizon is the operational definition of predictive capacity used across the simulations.
+EXTENDING THE MODEL
+(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+These extensions build directly on the documented limitations and design choices of the Bratislava pilot.
+Time-of-day modal-share dynamics. Replace the static MS1/MS2/MS3 chooser with a time-varying departure generator that reproduces Bratislava's morning/evening ridership curves, so that the model's calibration comparison against report 51 is fully tested throughout the day.
+Realistic vulnerable layer. Sample income from a non-normal distribution (e.g., a Pareto tail) to test how vulnerability = income < ½·average behaves under heavier right tails — extending the equity analysis of Theil-T in regimes where low-income groups are more clustered in space.
+HMS-adjusted Theil-T. Currently the equity index is typically widened by up to 18% when ferry + modal shift coincide. Decompose this into origin-aware components to expose which income cohorts benefit (and which lose) when each intervention is applied.
+Multi-modal pathfinding with mode-switching. Add a sub-model where agents can switch mode mid-trip (e.g., walk → tram → walk) and re-quantify whether the SNP closure could be fully bypassed without the ferry, reusing the multimodal graph.
+Adaptive modal-share sliders. Replace the static MS1/MS2/MS3 chooser with a continuous slider and trigger MS redistribution as an adaptive response (drop-in replacement for the discrete MS lookup) to integrate with a real-time DSS panel.
+Origin-distance bias. Currently destinations are randomly allocated across the area at intersections or stops. Add a distance-weighted allocator to test how the model responds when more commuters have short- vs. long-distance journeys.
+Equity-dominant alternative to R3. R3 (the ferry approach) consistently outperforms the simple MS shifts on absolute throughput but widens Theil-T. Implement an equity-targeted MS variant that introduces a minimum-share constraint on low-income origin patches and reassess the trade-off.
+Forecast-horizon parameter. Currently all outputs are evaluated after 10 minutes. Add a configurable forecast horizon so that slow-onset closures (e.g., maintenance) can be distinguished from abrupt outages.
+Bridge-load attribution. Tag each agent's trip-end with the specific bridge node crossed, so that the asymmetric impact of SNP-only vs. SNP+Stary on throughput (both −7.10%) can be unpacked in terms of which node was the actual bottleneck.
+NETLOGO FEATURES
+(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+Multi-modal directed graph via per-mode agents. Cars, buses and trams each have their own set of edges (links), and each mode uses a different network (road / bus / tram). NetLogo's network extension is reused with a dedicated breed per mode so that the shortest-path queries can be mode-aware at runtime.
+Stationary agents for stops and intersections. Each node on the multimodal graph is a stationary agent that holds traffic-flow state. Two destinations are randomly allocated at these nodes per journey, so the stationary agents double as access-point and flow-storage structures.
+patches-encoded socioeconomic layer. Population density and the distribution of socioeconomic profiles are stored as static patches (sourced from official report 50). This avoids encoding a possibly large secondary agent breed and keeps the global state cacheable.
+Patch-to-agent income-down at birth. When a traveller is born, the patch's socioeconomic profile is sampled (normal distribution) and assigned as the agent's income variable. The load1-load2 procedures implements the patch→agent inheritance in a single pass.
+Vulnerability classifier as patch-level predicate. The threshold income < 0.5 × population-average is pre-computed and stored on the patch so that the per-tick check is a simple lookup rather than a recomputing scan.
+Composite response procedure. The MS/ferry combination is invoked via a single apply-response reporter that internally branches on the active mode-share (car, bus, tram) tuple and a boolean ferry flag — a low-code workaround to keep the UI composite switch and the underlying code-path in sync.
+random-normal and dynamic random-float draws per agent. Income, modal choice and small-stochastic destination allocation all draw from a normal or uniform distribution, matching the stochastic semantics of mobility choice distortion during perturbations.
+10-minute forecast horizon as an embedded time-counter. Rather than relying on a free-running schedule, the simulation records KPIs at the 10-minute mark and freezes them for visualisation. This snapshot horizon is implemented as a single ticks = 600 constant in the go procedure, with a plot-reset flag at that moment.
+Composite KPI plot panel. Multiple time-series — Throughput (general), Throughput (vulnerable), Efficiency, Theil-T — are stacked into a single plot using NetLogo's plot-pen decomposition semantics; an analogous workaround to the one used by the AHEPA pilot, scaled up by the Theil-T dimension.
+RELATED MODELS
+The Bratislava pilot is one of three case studies developed under the umbrella DSS framework of D3.4, and its ontology was crafted to be compatible with the other pilots:
+AHEPA Hospital model — Same DSS framework but focused on patient-access to the AHEPA tertiary hospital in Thessaloniki. 
+Larissa model — Same DSS framework but oriented around a flood-disruption scenario.
+Odessa model — A sibling evacuation case study.
+CREDITS AND REFERENCES
+•	Source deliverable: Tzioutziou, A., Tsami, M., Xenidis, Y., et al.. D3.4 Mobility Triage Analysis DSS. AntifragiCity Project, 2026. Section 5.3.2 — Bratislava, inclusive of subsections 5.3.2.1 Model Development, 5.3.2.2 Definition of Parameters and Scenarios, and 5.3.2.3 Simulations' Results.
+•	OpenStreetMap — Source of the primary/secondary road, bus and tram networks.
